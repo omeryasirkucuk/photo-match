@@ -339,7 +339,10 @@
             </div>
             <div id="comboDisplay" class="combo-display"></div>
             <div class="board" id="board"></div>
-            <button class="btn" id="menuBtn">MENU</button>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <button class="btn" id="menuBtn">MENU</button>
+                <button class="btn" id="finishBtn" style="background-color:#16c79a;">OYUNU BITIR</button>
+            </div>
         </div>
     </div>
 
@@ -635,6 +638,10 @@
 
         document.getElementById('startBtn').addEventListener('click', startGame);
         document.getElementById('menuBtn').addEventListener('click', goToMenu);
+        document.getElementById('finishBtn').addEventListener('click', () => {
+            clearInterval(timerInterval);
+            showWinScreen();
+        });
         document.getElementById('winMenuBtn').addEventListener('click', goToMenu);
         document.getElementById('playAgainBtn').addEventListener('click', () => {
             overlay.classList.remove('active');
