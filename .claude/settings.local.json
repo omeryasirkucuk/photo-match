@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(which npx:*)",
+      "Bash(which gh:*)",
+      "Bash(npx:*)",
+      "Bash(npm cache:*)",
+      "Bash(curl:*)",
+      "Bash(brew list:*)",
+      "Bash(brew install:*)",
+      "Bash(gh auth:*)",
+      "Bash(mkdir:*)",
+      "Bash(git init:*)",
+      "Bash(GH_CONFIG_DIR=/tmp/gh-config gh repo create pixel-animal-match --public --source=. --push 2>&1)",
+      "Bash(GH_CONFIG_DIR=/tmp/gh-config gh api repos/omeryasirkucuk/pixel-animal-match/pages -X POST -f build_type=legacy -f source='{\"branch\":\"main\",\"path\":\"/\"}' 2>&1)",
+      "Bash(git add:*)",
+      "Bash(GH_CONFIG_DIR=/tmp/gh-config gh repo rename photo-match --yes 2>&1)",
+      "Bash(git remote:*)"
+    ]
+  }
+}
