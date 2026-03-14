@@ -238,36 +238,55 @@
 
         .love-message {
             position: relative;
-            height: 60px;
-            margin-bottom: 10px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .love-heart {
+        .hearts-container {
             position: absolute;
-            font-size: 1.8rem;
-            opacity: 0;
-            animation: floatHeart 2s ease-in-out infinite;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
 
-        .love-heart-1 { left: 10%; animation-delay: 0s; }
-        .love-heart-2 { left: 30%; animation-delay: 0.4s; }
-        .love-heart-3 { left: 50%; animation-delay: 0.8s; }
-        .love-heart-4 { left: 70%; animation-delay: 1.2s; }
-        .love-heart-5 { left: 85%; animation-delay: 1.6s; }
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: floatUp 3s ease-in-out forwards;
+        }
 
-        @keyframes floatHeart {
-            0% { transform: translateY(20px) scale(0.5); opacity: 0; }
-            30% { opacity: 1; }
-            60% { opacity: 1; }
-            100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
+        @keyframes floatUp {
+            0% { transform: translateY(80px) scale(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; transform: translateY(40px) scale(1) rotate(15deg); }
+            50% { opacity: 1; }
+            100% { transform: translateY(-120px) scale(0.6) rotate(-15deg); opacity: 0; }
         }
 
         .love-title {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             color: #ff6b9d;
-            text-shadow: 2px 2px 0 #c0392b, 0 0 20px rgba(255,107,157,0.5);
-            margin-bottom: 20px;
-            animation: lovePulse 1.2s ease-in-out infinite alternate, loveGlow 2s ease-in-out infinite;
+            text-shadow: 2px 2px 0 #c0392b;
+            opacity: 0;
+            transform: scale(0);
+            z-index: 2;
+        }
+
+        .love-title.animate {
+            animation: loveAppear 1s ease-out forwards, lovePulse 1.2s ease-in-out 1s infinite alternate, loveGlow 2s ease-in-out 1s infinite;
+        }
+
+        @keyframes loveAppear {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: scale(1.3) rotate(3deg); opacity: 1; }
+            80% { transform: scale(0.95) rotate(-1deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
         @keyframes lovePulse {
@@ -278,6 +297,19 @@
         @keyframes loveGlow {
             0%, 100% { text-shadow: 2px 2px 0 #c0392b, 0 0 20px rgba(255,107,157,0.3); }
             50% { text-shadow: 2px 2px 0 #c0392b, 0 0 40px rgba(255,107,157,0.8), 0 0 60px rgba(255,107,157,0.4); }
+        }
+
+        #winDetails {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        #winDetails.show {
+            animation: detailsAppear 0.5s ease-out forwards;
+        }
+
+        @keyframes detailsAppear {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 480px) {
@@ -314,18 +346,16 @@
     <!-- WIN OVERLAY -->
     <div class="overlay" id="overlay">
         <div class="win-modal">
-            <div class="love-message">
-                <span class="love-heart love-heart-1">❤️</span>
-                <span class="love-heart love-heart-2">💕</span>
-                <span class="love-heart love-heart-3">❤️</span>
-                <span class="love-heart love-heart-4">💖</span>
-                <span class="love-heart love-heart-5">💗</span>
+            <div class="love-message" id="loveMessage">
+                <div class="hearts-container" id="heartsContainer"></div>
+                <h2 class="love-title" id="loveTitle">omer loves esra</h2>
             </div>
-            <h2 class="love-title">omer loves esra</h2>
-            <p id="winText"></p>
-            <div class="win-buttons">
-                <button class="btn" id="playAgainBtn">TEKRAR OYNA</button>
-                <button class="btn" id="winMenuBtn">MENU</button>
+            <div id="winDetails" style="display:none;">
+                <p id="winText"></p>
+                <div class="win-buttons">
+                    <button class="btn" id="playAgainBtn">TEKRAR OYNA</button>
+                    <button class="btn" id="winMenuBtn">MENU</button>
+                </div>
             </div>
         </div>
     </div>
@@ -562,24 +592,45 @@
         function showWinScreen() {
             const score = moves + elapsedSeconds;
             winText.innerHTML = 'HAMLE: ' + moves + ' | SURE: ' + formatTime(elapsedSeconds) + ' | SKOR: ' + score;
-            spawnConfetti();
-            overlay.classList.add('active');
-        }
 
-        function spawnConfetti() {
-            const modal = document.querySelector('#overlay .win-modal');
-            const colors = ['#e94560', '#16c79a', '#ffcc00', '#0f3460', '#00ff00'];
-            for (let i = 0; i < 30; i++) {
-                const piece = document.createElement('div');
-                piece.className = 'confetti-piece';
-                piece.style.left = Math.random() * 100 + '%';
-                piece.style.top = Math.random() * 100 + '%';
-                piece.style.backgroundColor = colors[i % colors.length];
-                piece.style.animationDelay = Math.random() * 0.5 + 's';
-                piece.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
-                modal.appendChild(piece);
-                setTimeout(() => piece.remove(), 2000);
-            }
+            const loveTitle = document.getElementById('loveTitle');
+            const winDetails = document.getElementById('winDetails');
+            const heartsContainer = document.getElementById('heartsContainer');
+
+            // Reset
+            loveTitle.classList.remove('animate');
+            winDetails.classList.remove('show');
+            winDetails.style.display = 'none';
+            heartsContainer.innerHTML = '';
+
+            overlay.classList.add('active');
+
+            // Spawn floating hearts continuously
+            const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💘', '💝'];
+            let heartInterval = setInterval(() => {
+                const heart = document.createElement('span');
+                heart.className = 'floating-heart';
+                heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.left = Math.random() * 90 + '%';
+                heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+                heart.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+                heartsContainer.appendChild(heart);
+                setTimeout(() => heart.remove(), 4000);
+            }, 200);
+
+            // Show love title after a short delay
+            setTimeout(() => {
+                loveTitle.classList.add('animate');
+            }, 500);
+
+            // Show details after love animation plays
+            setTimeout(() => {
+                winDetails.style.display = '';
+                winDetails.classList.add('show');
+            }, 2500);
+
+            // Stop spawning hearts after a while but let existing ones finish
+            setTimeout(() => clearInterval(heartInterval), 8000);
         }
 
         document.getElementById('startBtn').addEventListener('click', startGame);
